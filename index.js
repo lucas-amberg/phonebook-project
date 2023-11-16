@@ -26,6 +26,12 @@ let persons = [
     }
 ]
 
+const newId = () => {
+    const id = Math.floor(Math.random()*1000)
+    
+    return id
+}
+
 app.get("/", (request, response) => {
     response.send("<h1>Hello, welcome to the phonebook API</h1>")
 })
@@ -55,6 +61,34 @@ app.delete("/api/persons/:id", (request, response) => {
         response.status(404).end()
     }
     response.status(204).end()
+})
+
+app.post("/api/persons", (request, response) => {
+    const body = request.body
+    console.log(body)
+    if (!body.name) {
+        return response.status(400).json({
+            error: "name missing"
+        })
+    }
+    else if (!body.number) {
+        return response.status(400).json({
+            error: "number missing"
+        })
+    }
+    else if (persons.find(person => person.name === body.name)) {
+        return response.status(400).json({
+            error: "name must be unique"
+        })
+    }
+    const newPerson = {
+        id: newId(),
+        name: body.name,
+        number: body.number
+    }
+    persons = persons.concat(newPerson)
+
+    response.json(newPerson)
 })
 
 
