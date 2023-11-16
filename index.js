@@ -49,8 +49,11 @@ app.get("/info", (request, response) => {
 
 app.delete("/api/persons/:id", (request, response) => {
     const id = Number(request.params.id)
+    const lengthBefore = persons.length
     persons = persons.filter(person => person.id !== id)
-
+    if (persons.length === lengthBefore) {
+        response.status(404).end()
+    }
     response.status(204).end()
 })
 
