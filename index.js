@@ -34,6 +34,11 @@ app.get("/api/persons", (request, response) => {
     response.send(persons)
 })
 
+app.get("/api/persons/:id", (request, response) => {
+    const id = Number(request.params.id)
+    response.send(persons.find(person => person.id === id))
+})
+
 app.get("/info", (request, response) => {
     const currentTime = new Date()
     response.send(`
@@ -41,6 +46,7 @@ app.get("/info", (request, response) => {
     <p>${currentTime}</p>
     `)
 })
+
 
 
 const PORT = 3001
