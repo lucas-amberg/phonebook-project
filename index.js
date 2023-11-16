@@ -3,6 +3,7 @@ const app = express()
 
 app.use(express.json())
 
+// Initial persons
 let persons = [
     { 
       "id": 1,
@@ -26,25 +27,30 @@ let persons = [
     }
 ]
 
+// Function to generate new ID between 0 and 999 for new person
 const newId = () => {
     const id = Math.floor(Math.random()*1000)
     
     return id
 }
 
+// Root page response
 app.get("/", (request, response) => {
     response.send("<h1>Hello, welcome to the phonebook API</h1>")
 })
 
+// Shows all persons
 app.get("/api/persons", (request, response) => {
     response.send(persons)
 })
 
+// Shows individual person RESTfully by searching their ID
 app.get("/api/persons/:id", (request, response) => {
     const id = Number(request.params.id)
     response.send(persons.find(person => person.id === id))
 })
 
+// Displays information about the API
 app.get("/info", (request, response) => {
     const currentTime = new Date()
     response.send(`
@@ -53,6 +59,7 @@ app.get("/info", (request, response) => {
     `)
 })
 
+// Deletes a person based on their ID
 app.delete("/api/persons/:id", (request, response) => {
     const id = Number(request.params.id)
     const lengthBefore = persons.length
@@ -63,6 +70,7 @@ app.delete("/api/persons/:id", (request, response) => {
     response.status(204).end()
 })
 
+// Adds a new person with a post request to /api/persons
 app.post("/api/persons", (request, response) => {
     const body = request.body
     console.log(body)
@@ -91,7 +99,7 @@ app.post("/api/persons", (request, response) => {
     response.json(newPerson)
 })
 
-
+// Starts server
 const PORT = 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
