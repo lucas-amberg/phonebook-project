@@ -1,7 +1,9 @@
 const express = require("express")
 const app = express()
+const morgan = require("morgan")
 
 app.use(express.json())
+app.use(morgan("tiny"))
 
 // Initial persons
 let persons = [
@@ -73,7 +75,6 @@ app.delete("/api/persons/:id", (request, response) => {
 // Adds a new person with a post request to /api/persons
 app.post("/api/persons", (request, response) => {
     const body = request.body
-    console.log(body)
     if (!body.name) {
         return response.status(400).json({
             error: "name missing"
@@ -98,8 +99,8 @@ app.post("/api/persons", (request, response) => {
 
     response.json(newPerson)
 })
-
 // Starts server
+
 const PORT = 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
