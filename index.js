@@ -1,14 +1,17 @@
 const express = require("express")
 const morgan = require("morgan")
+const cors  =  require("cors")
 
 morgan.token("data", (request) => {
     return JSON.stringify(request.body)
 })
 
 const app = express()
+app.use(express.static("dist"))
 
 
 app.use(express.json())
+app.use(cors())
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :data"))
 
 // Initial persons
@@ -35,17 +38,15 @@ let persons = [
     }
 ]
 
+let id = persons.length
+
 // Function to generate new ID between 0 and 999 for new person
 const newId = () => {
-    const id = Math.floor(Math.random()*1000)
-    
+    id = id + 1
     return id
 }
 
 // Root page response
-app.get("/", (request, response) => {
-    response.send("<h1>Hello, welcome to the phonebook API</h1>")
-})
 
 // Shows all persons
 app.get("/api/persons", (request, response) => {
@@ -107,7 +108,7 @@ app.post("/api/persons", (request, response) => {
 })
 // Starts server
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
