@@ -11,11 +11,10 @@ morgan.token("data", (request) => {
 
 const app = express() //Sets app to express
 app.use(express.static("dist")) //Sets frontend to dist directory
-
-
 app.use(express.json())
 app.use(cors())
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :data"))
+
 
 
 // OLD OG LIST OF NUMBERS AND NAMES
@@ -61,10 +60,19 @@ app.get("/api/persons", (request, response) => {
 })
 
 // Shows individual person RESTfully by searching their ID
-app.get("/api/persons/:id", (request, response) => {
-    Person.findById(request.params.id).then(person => {
-        response.json(person)
-    })
+app.get("/api/persons/:id", (request, response, next) => {
+    Person.findById(request.params.id)
+        .then(person => {
+            if (person) {
+                response.json(person)
+            }
+            else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => {
+            next(error)
+        })
 })
 
 // Displays information about the API
@@ -76,15 +84,27 @@ app.get("/info", (request, response) => {
     `)
 })
 
+//OLD FUNCTIONALITY FOR DELETING
 // Deletes a person based on their ID
-app.delete("/api/persons/:id", (request, response) => {
-    const id = Number(request.params.id)
-    const lengthBefore = persons.length
-    persons = persons.filter(person => person.id !== id)
-    if (persons.length === lengthBefore) {
-        response.status(404).end()
-    }
-    response.status(204).end()
+// app.delete("/api/persons/:id", (request, response) => {
+//     const id = Number(request.params.id)
+//     const lengthBefore = persons.length
+//     persons = persons.filter(person => person.id !== id)
+//     if (persons.length === lengthBefore) {
+//         response.status(404).end()
+//     }
+//     response.status(204).end()
+// })
+
+app.delete("/api/persons/:id", (request, response, next) => {
+    Person.findByIdAndDelete(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(error => {
+            console.log("error recieved: ", error.message)
+            next(error)
+        })
 })
 
 // Adds a new person with a post request to /api/persons
@@ -116,6 +136,28 @@ app.post("/api/persons", (request, response) => {
     })
 
 })
+
+//Handles all requests that reach an unknown endpoint
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({error: "unknown endpoint"})
+}
+
+app.use(unknownEndpoint)
+
+//Error handler middleware
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+    //Handles all requests that aren't to a properly formatted ID
+    if (error.name === "CastError") {
+        return response.status(400).send({error: "malformatted id"})
+    }
+
+    next(error)
+}
+
+app.use(errorHandler)
+
+
 // Starts server
 
 const PORT = process.env.PORT

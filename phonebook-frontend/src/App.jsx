@@ -96,7 +96,7 @@ const App = () => {
         const newPersons = persons.filter((person) => {
           return person.id !== id
         })
-        console.log(newPersons)
+        // console.log(newPersons)
         setPersons(newPersons)
         filterPersons(newFilter, newPersons)
       })
