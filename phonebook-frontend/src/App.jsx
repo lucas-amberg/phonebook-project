@@ -133,7 +133,7 @@ const App = () => {
     const personExist = persons.find((person) => person.name === newName)
     if (personExist !== undefined) {
       if (window.confirm(`${personExist.name} is already added to the phone book, replace the old number with a new one?`)) {
-        console.log(personExist)
+        // console.log(personExist)
         phoneBookService
           .changePhoneNumber(personExist, newNumber)
           .then(updatedPerson => {
@@ -151,16 +151,16 @@ const App = () => {
               setPopUpType(null)
             },5000)
           })
-          .catch(error=> {
+          .catch(error=> { 
             setPopUpType("fail-pop-up")
-            setPopUpText(`Information of ${personExist.name} has already been removed from server`)
-            
-            const updatedPersons = persons.filter((person) => {
-              return person.id !== personExist.id
-            })
+            setPopUpText(error.response.data.error)
 
-            setPersons(updatedPersons)
-            setShownPersons(updatedPersons)
+            // const updatedPersons = persons.filter((person) => {
+            //   return person.id !== personExist.id
+            // })
+
+            // setPersons(updatedPersons)
+            // setShownPersons(updatedPersons)
             setTimeout(() => {
               setPopUpText(null)
               setPopUpType(null)
@@ -185,18 +185,29 @@ const App = () => {
           setNewNumber("")
           setPopUpType("success-pop-up")
           setPopUpText(`Added ${newPerson.name}`)
+          console.log(newPerson.id)
+          if (newFilter !== "") { //Makes sure no filters are applied and if they are they remain in place
+            filterPersons(newFilter, persons.concat({name: newName, number: newNumber, id: newPerson.id}))
+          }
+          else { //Shows persons as normal without filter
+            setShownPersons(persons.concat({name: newName, number: newNumber, id: newPerson.id}))
+          }
+
+          setTimeout(()=>{
+            setPopUpType(null)
+            setPopUpText(null)
+          }, 5000)
+        })
+        .catch(error => { // Catches an error when the validation fails
+          setPopUpText(error.response.data.error)
+          setPopUpType("fail-pop-up")
           setTimeout(()=>{
             setPopUpType(null)
             setPopUpText(null)
           }, 5000)
         })
 
-      if (newFilter !== "") {
-        filterPersons(newFilter, persons.concat({name: newName, number: newNumber, id: personNewId}))
-      }
-      else {
-        setShownPersons(persons.concat({name: newName, number: newNumber, id: personNewId}))
-      }
+      
       
     }
     console.log("exit")

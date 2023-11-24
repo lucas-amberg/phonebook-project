@@ -18,8 +18,16 @@ mongoose.connect(url) //Connects to database
 
 //Template for Person Document in Mongo Cluster
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String
+    name: {
+        type: String,
+        minLength: 3,
+        required: true
+    },
+    number: {
+        type: String,
+        minLength: 7,
+        required: true
+    }
 })
 
 //Makes it so the API does not display a __v and _id attribute because they are unnessessary
