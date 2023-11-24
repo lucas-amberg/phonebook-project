@@ -59,6 +59,22 @@ app.get("/api/persons", (request, response) => {
     })
 })
 
+// Displays information about the API
+app.get("/info", (request, response) => {
+    const currentTime = new Date()
+    Person.countDocuments({}).exec() //Returns promise with number of person docs
+        .then(count => {
+            response.send(`
+            <p>Phonebook has info for ${count} people</p>
+            <p>${currentTime}</p>
+            `)
+        })
+        .catch(error => {
+            next(error)
+        })
+    
+})
+
 // Shows individual person RESTfully by searching their ID
 app.get("/api/persons/:id", (request, response, next) => {
     Person.findById(request.params.id)
@@ -75,14 +91,7 @@ app.get("/api/persons/:id", (request, response, next) => {
         })
 })
 
-// Displays information about the API
-app.get("/info", (request, response) => {
-    const currentTime = new Date()
-    response.send(`
-    <p>Phonebook has info for ${persons.length} people</p>
-    <p>${currentTime}</p>
-    `)
-})
+
 
 //OLD FUNCTIONALITY FOR DELETING
 // Deletes a person based on their ID
@@ -105,6 +114,21 @@ app.delete("/api/persons/:id", (request, response, next) => {
             console.log("error recieved: ", error.message)
             next(error)
         })
+})
+
+app.put("/api/persons/:id", (request, response, next) => {
+    const body = request.body
+    
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+
+    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+        .then(updatedPerson => {
+            response.json(updatedPerson)
+        })
+        .catch(error => next(error))
 })
 
 // Adds a new person with a post request to /api/persons

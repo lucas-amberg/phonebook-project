@@ -62,6 +62,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   // console.log(`render ${persons.length} persons`)
   useEffect(()=> {
+    document.title = "Phonebook"
     phoneBookService
       .retrievePersons()
       .then(initialPersons => {
@@ -96,9 +97,15 @@ const App = () => {
         const newPersons = persons.filter((person) => {
           return person.id !== id
         })
+        setPopUpType("success-pop-up")
+        setPopUpText(`Deleted ${name} successfully.`)
         // console.log(newPersons)
         setPersons(newPersons)
         filterPersons(newFilter, newPersons)
+        setTimeout(() => {
+          setPopUpText(null)
+          setPopUpType(null)
+        },5000)
       })
   }
 
@@ -215,6 +222,8 @@ const App = () => {
 
       <h2>Numbers</h2>
       <Persons personList={shownPersons} handleDelete={handleDeletePerson}/>
+      <br></br>
+      <p>All names, numbers, and information on this page are fictitious. No identification with actual persons (living or deceased) is intended or should be inferred.</p>
     </div>
   )
 }
