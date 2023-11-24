@@ -185,7 +185,7 @@ const App = () => {
           setNewNumber("")
           setPopUpType("success-pop-up")
           setPopUpText(`Added ${newPerson.name}`)
-          console.log(newPerson.id)
+          // console.log(newPerson.id)
           if (newFilter !== "") { //Makes sure no filters are applied and if they are they remain in place
             filterPersons(newFilter, persons.concat({name: newName, number: newNumber, id: newPerson.id}))
           }
@@ -210,7 +210,7 @@ const App = () => {
       
       
     }
-    console.log("exit")
+    // console.log("exit")
   }
 
   return (
